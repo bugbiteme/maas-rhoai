@@ -1,0 +1,37 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: maas-default-gateway
+  namespace: openshift-ingress
+  annotations:
+    opendatahub.io/managed: "false"
+    security.opendatahub.io/authorino-tls-bootstrap: "true"
+spec:
+  gatewayClassName: openshift-default
+  listeners:
+  # External clients (curl, SDKs) via maas.<domain>
+  - name: https
+    hostname: maas.${DOMAIN}
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: ${CERT_SECRET}
+    allowedRoutes:
+      namespaces:
+        from: All
+  # In-cluster clients (Gen AI playground / OGX) via the gateway's service name
+  - name: https-internal
+    hostname: maas-default-gateway-openshift-default.openshift-ingress.svc.cluster.local
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: ${CERT_SECRET}
+    allowedRoutes:
+      namespaces:
+        from: All
