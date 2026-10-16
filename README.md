@@ -261,7 +261,7 @@ Stop the running model via the UI to free up GPU resources
 
 ```
 --dtype=half
---max-model-len=20000
+--max-model-len=32768
 --gpu-memory-utilization=0.95
 --enable-auto-tool-choice
 --tool-call-parser=llama3_json
